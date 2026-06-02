@@ -167,7 +167,7 @@ function App() {
       ]);
 
       const data = await ffmpeg.readFile(outputName);
-      const outputBlob = new Blob([data as Uint8Array], {
+      const outputBlob = new Blob([data as unknown as BlobPart], {
         type: `video/${item.targetFormat}`,
       });
       const outputUrl = URL.createObjectURL(outputBlob);
