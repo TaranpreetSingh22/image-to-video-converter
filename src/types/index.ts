@@ -13,4 +13,5 @@ export interface ImageItem {
   progress: number;
   outputUrl?: string;
   outputBlob?: Blob;
+  createdAt: number;
 }
