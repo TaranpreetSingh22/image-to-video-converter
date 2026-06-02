@@ -142,7 +142,7 @@ function App() {
       ffmpeg.on("progress", ({ progress }) => {
         // Progress goes from 0 to 1
         updateImage(id, {
-          progress: Math.max(0, Math.min(100, Math.round(progress * 100))),
+          progress: Math.max(0, Math.min(95, Math.round(progress * 100))),
         });
       });
 
@@ -155,6 +155,10 @@ function App() {
         inputName,
         "-t",
         "5", // 5 seconds duration
+        "-r",
+        "25",
+        "-preset",
+        "ultrafast",
         "-pix_fmt",
         "yuv420p",
         "-s",
@@ -253,6 +257,7 @@ function App() {
               dataSource={images}
               renderItem={(item) => (
                 <List.Item
+                  className="w-full flex-col sm:flex-row items-start sm:items-center"
                   actions={[
                     item.status === "Done" ? (
                       <Button
@@ -276,32 +281,45 @@ function App() {
                   ]}
                 >
                   <List.Item.Meta
+                    className="w-full min-w-0" // min-w-0 is the secret ingredient for flexbox truncation
                     avatar={
                       <img
                         src={item.previewUrl}
                         alt="preview"
-                        className="w-16 h-16 object-cover rounded shadow-sm"
+                        className="w-16 h-16 object-cover rounded shadow-sm shrink-0"
                       />
                     }
                     title={
-                      <Space>
-                        <Text strong>{item.file.name}</Text>
-                        {item.status === "Pending" && (
-                          <Tag color="default">Pending</Tag>
-                        )}
-                        {item.status === "Converting" && (
-                          <Tag color="processing">Converting</Tag>
-                        )}
-                        {item.status === "Done" && (
-                          <Tag color="success">Done</Tag>
-                        )}
-                        {item.status === "Error" && (
-                          <Tag color="error">Error</Tag>
-                        )}
-                      </Space>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Text
+                          strong
+                          // Use AntD's built-in ellipsis which automatically adds a tooltip on hover!
+                          ellipsis={{ tooltip: item.file.name }}
+                          // Tailwind handles the max-width dynamically based on screen size
+                          className="max-w-30 sm:max-w-50 md:max-w-75"
+                        >
+                          {item.file.name}
+                        </Text>
+
+                        <Space size="small">
+                          {item.status === "Pending" && (
+                            <Tag color="default">Pending</Tag>
+                          )}
+                          {item.status === "Converting" && (
+                            <Tag color="processing">Converting</Tag>
+                          )}
+                          {item.status === "Done" && (
+                            <Tag color="success">Done</Tag>
+                          )}
+                          {item.status === "Error" && (
+                            <Tag color="error">Error</Tag>
+                          )}
+                        </Space>
+                      </div>
                     }
                     description={
                       <Space className="mt-2" wrap>
+                        {/* Your Select and InputNumber components stay exactly the same here */}
                         <Select
                           size="small"
                           value={item.targetFormat}
@@ -350,7 +368,7 @@ function App() {
                     }
                   />
                   {item.status === "Converting" && (
-                    <div className="w-48 ml-4">
+                    <div className="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-4">
                       <Progress percent={item.progress} size="small" />
                     </div>
                   )}
